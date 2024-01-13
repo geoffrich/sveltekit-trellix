@@ -5,6 +5,10 @@
 	export let form;
 </script>
 
+<svelte:head>
+	<title>Trellix Signup</title>
+</svelte:head>
+
 <div class="mt-20 flex min-h-full flex-1 flex-col sm:px-6 lg:px-8">
 	<div class="sm:mx-auto sm:w-full sm:max-w-md">
 		<h2

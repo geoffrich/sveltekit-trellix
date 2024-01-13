@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>Trellix, a Remix Demo</title>
+</svelte:head>
+
 <div class="flex h-full flex-col items-center bg-slate-900 pt-20">
 	<img src="/remix-logo-new@dark.png" width="402" height="149" />
 	<div class="max-w-md space-y-4 text-lg text-slate-300">
