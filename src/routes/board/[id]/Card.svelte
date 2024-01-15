@@ -3,6 +3,7 @@
 	import Icon from '$lib/icons/Icon.svelte';
 	import { type ItemMutation, CONTENT_TYPES } from './types';
 	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 
 	export let title: string;
 	export let content: string | null;
@@ -15,7 +16,7 @@
 	let acceptDrop: 'none' | 'top' | 'bottom' = 'none';
 	let isDeleting = false; // notes: alternative to deleteFetcher.state !== 'idle'
 
-	function handleDrop(event: DragEvent) {
+	async function handleDrop(event: DragEvent) {
 		event.stopPropagation();
 
 		let transfer = JSON.parse(event.dataTransfer.getData(CONTENT_TYPES.card));
@@ -25,23 +26,27 @@
 		let droppedOrder = acceptDrop === 'top' ? previousOrder : nextOrder;
 		let moveOrder = (droppedOrder + order) / 2;
 
-		// let mutation: ItemMutation = {
-		//   order: moveOrder,
-		//   columnId: columnId,
-		//   id: transfer.id,
-		//   title: transfer.title,
-		// };
+		// notes: have to construct FormData, no helper to submit
+		// this means it isn't as typesafe too
+		const formData = new FormData();
+		formData.append('order', moveOrder.toString());
+		formData.append('columnId', columnId);
+		formData.append('id', transfer.id);
+		formData.append('title', transfer.title);
 
-		// submit(
-		//   { ...mutation, intent: INTENTS.moveItem },
-		//   {
-		//     method: "post",
-		//     navigate: false,
-		//     fetcherKey: `card:${transfer.id}`,
-		//   },
-		// );
-
+		// TODO extract into helper
+		const result = fetch(`?/moveItem`, {
+			method: 'POST',
+			body: formData,
+			headers: {
+				Accept: 'application/json'
+			}
+		});
+		// TODO fetcherKey: `card:${transfer.id}`,
 		acceptDrop = 'none';
+		// TODO check result type
+		await result;
+		await invalidateAll();
 	}
 
 	// notes: react difference - draggable="true" required as opposed to draggable

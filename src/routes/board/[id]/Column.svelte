@@ -7,6 +7,7 @@
 	import NewCard from './NewCard.svelte';
 	import Card from './Card.svelte';
 	import EditableText from './EditableText.svelte';
+	import { invalidateAll } from '$app/navigation';
 
 	export let name: string;
 	export let columnId: string;
@@ -21,31 +22,32 @@
 		listRef.scrollTop = listRef.scrollHeight;
 	}
 
-	function handleDrop(event: DragEvent) {
+	async function handleDrop(event: DragEvent) {
 		let transfer = JSON.parse(event.dataTransfer.getData(CONTENT_TYPES.card));
 		invariant(transfer.id, 'missing transfer.id');
 		invariant(transfer.title, 'missing transfer.title');
 
-		let mutation: ItemMutation = {
-			order: 1,
-			columnId: columnId,
-			id: transfer.id,
-			title: transfer.title
-		};
+		const formData = new FormData();
+		formData.append('order', '1');
+		formData.append('columnId', columnId);
+		formData.append('id', transfer.id);
+		formData.append('title', transfer.title);
 
-		// TODO
-		// submit(
-		// 	{ ...mutation, intent: INTENTS.moveItem },
-		// 	{
-		// 		method: 'post',
-		// 		navigate: false,
-		// 		// use the same fetcher instance for any mutations on this card so
-		// 		// that interruptions cancel the earlier request and revalidation
-		// 		fetcherKey: `card:${transfer.id}`
-		// 	}
-		// );
+		// TODO helper
+		const result = fetch(`?/moveItem`, {
+			method: 'POST',
+			body: formData,
+			headers: {
+				Accept: 'application/json'
+			}
+		});
 
 		acceptDrop = false;
+
+		await result;
+		await invalidateAll();
+
+		// TODO fetcherKey: `card:${transfer.id}`
 	}
 </script>
 
