@@ -25,6 +25,8 @@ export async function load(request) {
 	return { board };
 }
 
+const delay = (ms: number) => new Promise((res, rej) => setTimeout(res, ms));
+
 async function getData(requestEvent: RequestEvent) {
 	let accountId = await requireAuthCookie(requestEvent);
 	const { request, params } = requestEvent;
@@ -32,6 +34,8 @@ async function getData(requestEvent: RequestEvent) {
 	let boardId = Number(params.id);
 	invariant(boardId, 'Missing boardId');
 	let formData = await request.formData();
+
+	// await delay(1500);
 
 	return { boardId, formData, accountId };
 }

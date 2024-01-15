@@ -2,6 +2,12 @@
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
+## ideas for SvelteKit
+
+- make programatically submitting to form actions easier
+- track active submissions when using enhance
+- make overriding focus handling post form submission easier
+
 ## Creating a project
 
 If you're seeing this, you've probably already done this step. Congrats!

@@ -3,14 +3,17 @@
 	import EditableText from './EditableText.svelte';
 	import Column from './Column.svelte';
 	import NewColumn from './NewColumn.svelte';
+	import { pendingFetchers } from './pending';
+	import type { RenderedItem } from './types';
+
 	export let data;
 
-	$: columns = getColumns(data.board);
+	$: columns = getColumns(data.board, $pendingFetchers);
 
-	function getColumns(board: typeof data.board) {
+	function getColumns(board: typeof data.board, pendingFetchers: typeof $pendingFetchers) {
 		let itemsById = new Map(board.items.map((item) => [item.id, item]));
 
-		let pendingItems = []; // TODO usePendingItems();
+		let pendingItems = getPendingItems(pendingFetchers);
 
 		// merge pending items and existing items
 		for (let pendingItem of pendingItems) {
@@ -20,7 +23,7 @@
 		}
 
 		// merge pending and existing columns
-		let optAddingColumns = []; // TODO usePendingColumns();
+		let optAddingColumns = getPendingColumns($pendingFetchers);
 		type Column = (typeof board.columns)[number] | (typeof optAddingColumns)[number];
 		type ColumnWithItems = Column & { items: typeof data.board.items };
 		let columns = new Map<string, ColumnWithItems>();
@@ -43,6 +46,29 @@
 	function scrollRight() {
 		invariant(scrollContainerRef, 'no scroll container');
 		scrollContainerRef.scrollLeft = scrollContainerRef.scrollWidth;
+	}
+
+	function getPendingColumns(pending: typeof $pendingFetchers) {
+		return pending
+			.filter((fetcher) => fetcher.action === '?/createColumn')
+			.map((fetcher) => {
+				let name = String(fetcher.formData.get('name'));
+				let id = String(fetcher.formData.get('id'));
+				return { name, id };
+			});
+	}
+
+	function getPendingItems(pending: typeof $pendingFetchers) {
+		return pending
+			.filter((fetcher) => fetcher.action === '?/createItem' || fetcher.action === '?/moveItem')
+			.map((fetcher) => {
+				let columnId = String(fetcher.formData.get('columnId'));
+				let title = String(fetcher.formData.get('title'));
+				let id = String(fetcher.formData.get('id'));
+				let order = Number(fetcher.formData.get('order'));
+				let item: RenderedItem = { title, id, order, columnId, content: null };
+				return item;
+			});
 	}
 </script>
 

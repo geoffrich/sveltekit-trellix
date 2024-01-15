@@ -4,6 +4,7 @@
 	import CancelButton from './CancelButton.svelte';
 	import { ItemMutationFields } from './types';
 	import { enhance } from '$app/forms';
+	import { pendingFetchers } from './pending';
 
 	export let columnId: string;
 	export let nextOrder: number;
@@ -26,7 +27,13 @@
 		textAreaRef.value = '';
 		onAddCard();
 
-		// TODO fetcherKey: `card:${id}`,
+		// notes: alternative to fetcherKey
+		pendingFetchers.add(`card:${id}`, formData, '?/createItem');
+
+		return async ({ update }) => {
+			await update();
+			pendingFetchers.remove(`card:${id}`);
+		};
 	}}
 	on:blur={(event) => {
 		if (!event.currentTarget.contains(event.relatedTarget)) {

@@ -8,6 +8,7 @@
 	import Card from './Card.svelte';
 	import EditableText from './EditableText.svelte';
 	import { invalidateAll } from '$app/navigation';
+	import { pendingFetchers } from './pending';
 
 	export let name: string;
 	export let columnId: string;
@@ -33,6 +34,8 @@
 		formData.append('id', transfer.id);
 		formData.append('title', transfer.title);
 
+		pendingFetchers.add(`card:${transfer.id}`, formData, '?/moveItem');
+
 		// TODO helper
 		const result = fetch(`?/moveItem`, {
 			method: 'POST',
@@ -47,7 +50,7 @@
 		await result;
 		await invalidateAll();
 
-		// TODO fetcherKey: `card:${transfer.id}`
+		pendingFetchers.remove(`card:${transfer.id}`);
 	}
 </script>
 

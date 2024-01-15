@@ -4,6 +4,7 @@
 	import { type ItemMutation, CONTENT_TYPES } from './types';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
+	import { pendingFetchers } from './pending';
 
 	export let title: string;
 	export let content: string | null;
@@ -34,6 +35,8 @@
 		formData.append('id', transfer.id);
 		formData.append('title', transfer.title);
 
+		pendingFetchers.add(`card:${transfer.id}`, formData, '?/moveItem');
+
 		// TODO extract into helper
 		const result = fetch(`?/moveItem`, {
 			method: 'POST',
@@ -42,11 +45,13 @@
 				Accept: 'application/json'
 			}
 		});
-		// TODO fetcherKey: `card:${transfer.id}`,
 		acceptDrop = 'none';
 		// TODO check result type
+		// TODO request cancellation
 		await result;
 		await invalidateAll();
+
+		pendingFetchers.remove(`card:${transfer.id}`);
 	}
 
 	// notes: react difference - draggable="true" required as opposed to draggable
