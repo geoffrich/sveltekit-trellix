@@ -3,7 +3,7 @@
 	import Input from './Input.svelte';
 	import Label from './Label.svelte';
 
-	export let id: string;
+	export let id: string | undefined = undefined;
 	export let label: string;
 
 	let uid = v4();
