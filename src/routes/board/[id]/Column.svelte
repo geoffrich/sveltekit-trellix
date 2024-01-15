@@ -70,10 +70,10 @@
 			value={name}
 			inputLabel="Edit column name"
 			buttonLabel={`Edit column "${name}" name`}
-			inputclass="border border-slate-400 w-full rounded-lg py-1 px-2 font-medium text-black"
-			buttonclass="block rounded-lg text-left w-full border border-transparent py-1 px-2 font-medium text-slate-600"
+			inputClassName="border border-slate-400 w-full rounded-lg py-1 px-2 font-medium text-black"
+			buttonClassName="block rounded-lg text-left w-full border border-transparent py-1 px-2 font-medium text-slate-600"
+			formAction="?/updateColumn"
 		>
-			<!-- <input type="hidden" name="intent" value={INTENTS.updateColumn} /> -->
 			<input type="hidden" name="columnId" value={columnId} />
 		</EditableText>
 	</div>

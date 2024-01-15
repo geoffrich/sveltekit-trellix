@@ -5,34 +5,37 @@
 	import NewColumn from './NewColumn.svelte';
 	export let data;
 
-	// TODO make reactive
+	$: columns = getColumns(data.board);
 
-	let itemsById = new Map(data.board.items.map((item) => [item.id, item]));
+	function getColumns(board: typeof data.board) {
+		let itemsById = new Map(board.items.map((item) => [item.id, item]));
 
-	let pendingItems = []; // TODO usePendingItems();
+		let pendingItems = []; // TODO usePendingItems();
 
-	// merge pending items and existing items
-	for (let pendingItem of pendingItems) {
-		let item = itemsById.get(pendingItem.id);
-		let merged = item ? { ...item, ...pendingItem } : { ...pendingItem, boardId: data.board.id };
-		itemsById.set(pendingItem.id, merged);
-	}
+		// merge pending items and existing items
+		for (let pendingItem of pendingItems) {
+			let item = itemsById.get(pendingItem.id);
+			let merged = item ? { ...item, ...pendingItem } : { ...pendingItem, boardId: board.id };
+			itemsById.set(pendingItem.id, merged);
+		}
 
-	// merge pending and existing columns
-	let optAddingColumns = []; // TODO usePendingColumns();
-	type Column = (typeof data.board.columns)[number] | (typeof optAddingColumns)[number];
-	type ColumnWithItems = Column & { items: typeof data.board.items };
-	let columns = new Map<string, ColumnWithItems>();
-	for (let column of [...data.board.columns, ...optAddingColumns]) {
-		columns.set(column.id, { ...column, items: [] });
-	}
+		// merge pending and existing columns
+		let optAddingColumns = []; // TODO usePendingColumns();
+		type Column = (typeof board.columns)[number] | (typeof optAddingColumns)[number];
+		type ColumnWithItems = Column & { items: typeof data.board.items };
+		let columns = new Map<string, ColumnWithItems>();
+		for (let column of [...board.columns, ...optAddingColumns]) {
+			columns.set(column.id, { ...column, items: [] });
+		}
 
-	// add items to their columns
-	for (let item of itemsById.values()) {
-		let columnId = item.columnId;
-		let column = columns.get(columnId);
-		invariant(column, 'missing column');
-		column.items.push(item);
+		// add items to their columns
+		for (let item of itemsById.values()) {
+			let columnId = item.columnId;
+			let column = columns.get(columnId);
+			invariant(column, 'missing column');
+			column.items.push(item);
+		}
+		return columns;
 	}
 
 	// scroll right when new columns are added
@@ -56,12 +59,12 @@
 		<EditableText
 			value={data.board.name}
 			fieldName="name"
-			inputclass="mx-8 my-4 text-2xl font-medium border border-slate-400 rounded-lg py-1 px-2 text-black"
-			buttonclass="mx-8 my-4 text-2xl font-medium block rounded-lg text-left border border-transparent py-1 px-2 text-slate-800"
+			inputClassName="mx-8 my-4 text-2xl font-medium border border-slate-400 rounded-lg py-1 px-2 text-black"
+			buttonClassName="mx-8 my-4 text-2xl font-medium block rounded-lg text-left border border-transparent py-1 px-2 text-slate-800"
 			buttonLabel={`Edit board "${data.board.name}" name`}
 			inputLabel="Edit board name"
+			formAction="?/updateBoardName"
 		>
-			<!-- <input type="hidden" name="intent" value={INTENTS.updateBoardName} /> -->
 			<input type="hidden" name="id" value={data.board.id} />
 		</EditableText>
 	</h1>
