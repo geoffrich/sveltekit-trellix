@@ -19,7 +19,7 @@
 	method="post"
 	class="border-b-2 border-t-2 border-transparent px-2 py-1"
 	action="?/createItem"
-	use:enhance={({ formData }) => {
+	use:enhance={({ formData, controller }) => {
 		// note: alternative to constructing formdata and calling submit
 		let id = crypto.randomUUID();
 		formData.set(ItemMutationFields.id.name, id);
@@ -28,7 +28,7 @@
 		onAddCard();
 
 		// notes: alternative to fetcherKey
-		pendingFetchers.add(`card:${id}`, formData, '?/createItem');
+		pendingFetchers.add(`card:${id}`, formData, '?/createItem', controller);
 
 		return async ({ update }) => {
 			await update();

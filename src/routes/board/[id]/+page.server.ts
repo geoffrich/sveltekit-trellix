@@ -35,7 +35,7 @@ async function getData(requestEvent: RequestEvent) {
 	invariant(boardId, 'Missing boardId');
 	let formData = await request.formData();
 
-	// await delay(1500);
+	//await delay(1500);
 
 	return { boardId, formData, accountId };
 }

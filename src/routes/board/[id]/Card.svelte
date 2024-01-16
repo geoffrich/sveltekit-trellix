@@ -35,7 +35,8 @@
 		formData.append('id', transfer.id);
 		formData.append('title', transfer.title);
 
-		pendingFetchers.add(`card:${transfer.id}`, formData, '?/moveItem');
+		const controller = new AbortController();
+		pendingFetchers.add(`card:${transfer.id}`, formData, '?/moveItem', controller);
 
 		// TODO extract into helper
 		const result = fetch(`?/moveItem`, {
@@ -43,7 +44,8 @@
 			body: formData,
 			headers: {
 				Accept: 'application/json'
-			}
+			},
+			signal: controller.signal
 		});
 		acceptDrop = 'none';
 		// TODO check result type
