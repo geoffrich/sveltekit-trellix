@@ -29,7 +29,7 @@
 		method="post"
 		action={formAction}
 		use:enhance={({ formData }) => {
-			// submittedFormData = formData;
+			submittedFormData = formData;
 			return async ({ result, update }) => {
 				await update();
 				// TODO: focus behavior wonky here
